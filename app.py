@@ -104,16 +104,16 @@ def main():
 
     with st.sidebar:
         st.header("⚙️ Configuração")
-        api_key = st.text_input("🔑 Google Gemini API Key", type="password")
-        st.caption("Gratuita: [aistudio.google.com](https://aistudio.google.com) → `Get API Key`")
         level = st.selectbox("📊 Seu nível", ["A1", "A2", "B1", "B2", "C1", "C2"])
         st.divider()
-        # FIX #8: removida menção enganosa ao microfone no sidebar
         st.info("💡 Use a aba **Conversação IA** para praticar inglês com correção automática.")
 
-    if not api_key:
-        st.warning("⚠️ Cole sua chave da API no menu lateral para ativar a IA.")
-        return
+    # Lê a chave da API dos secrets do Streamlit Cloud
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except (KeyError, FileNotFoundError):
+        st.error("⚠️ Chave da API não configurada. Adicione GEMINI_API_KEY nos secrets do Streamlit Cloud.")
+        st.stop()
 
     genai.configure(api_key=api_key)
     words = load_json("words.json", DEFAULT_WORDS)
